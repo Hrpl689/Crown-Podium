@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Crown Podium - Create</title>
+<style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #e53935, #ff6f60);
+      text-align: center;
+      color: white;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+
+    input, select {
+      display: block;
+      margin: 10px auto;
+      padding: 12px;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      background: #2196f3;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1976d2;
+    }
+
+    .box {
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 15px;
+      display: inline-block;
+      margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+
+<h1>👑 Créer un quiz</h1>
+
+<input id="quizTitle" placeholder="Nom du quiz"><br><br>
+
+<input id="question" placeholder="Question"><br>
+
+<input id="a1" placeholder="Réponse 1"><br>
+<input id="a2" placeholder="Réponse 2"><br>
+<input id="a3" placeholder="Réponse 3"><br>
+<input id="a4" placeholder="Réponse 4"><br>
+
+<select id="correct">
+  <option value="0">Réponse 1</option>
+  <option value="1">Réponse 2</option>
+  <option value="2">Réponse 3</option>
+  <option value="3">Réponse 4</option>
+</select>
+
+<input id="imageInput" placeholder="Lien de l'image (optionnel)">
+<button type="button" onclick="previewImage()">Prévisualiser l'image</button>
+<br>
+<img id="imagePreview" style="max-width: 80%; border-radius: 10px; margin-top: 10px; display:none;">
+    
+<br><br>
+<button onclick="createQuiz()">Créer le quiz</button>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyBwvGD0hhvka7BW88wg6NRTkKpVDIg18bw",
+    authDomain: "crown-podium-64fb5.firebaseapp.com",
+    databaseURL: "https://crown-podium-64fb5-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "crown-podium-64fb5",
+    storageBucket: "crown-podium-64fb5.firebasestorage.app",
+    messagingSenderId: "893724598521",
+    appId: "1:893724598521:web:9695de26ceef1738564228",
+    measurementId: "G-MG0ZBYDQXL"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function createQuiz(){
+  const title = document.getElementById("quizTitle").value;
+
+  const q = {
+    text: document.getElementById("question").value,
+    answers: [
+      document.getElementById("a1").value,
+      document.getElementById("a2").value,
+      document.getElementById("a3").value,
+      document.getElementById("a4").value
+    ],
+    correct: parseInt(document.getElementById("correct").value),
+    image: imageUrl || null
+  };
+
+  const quizRef = db.ref("quizzes").push();
+
+  quizRef.set({
+    title: title,
+    questions: [q]
+  });
+
+  alert("Quiz créé !");
+}
+
+function previewImage(){
+  const url = document.getElementById("imageInput").value;
+  const img = document.getElementById("imagePreview");
+
+  if(url){
+    img.src = url;
+    img.style.display = "block";
+  } else {
+    img.style.display = "none";
+    alert("Coller un lien d'image valide");
+  }
+}
+
+</script>
+
+</body>
+</html>

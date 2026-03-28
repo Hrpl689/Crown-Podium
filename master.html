@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Crown Podium - Host</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #2196f3, #6ec6ff);
+      color: white;
+      text-align: center;
+    }
+    h1 { font-size: 50px; margin-top: 20px; }
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      margin: 10px;
+      border-radius: 10px;
+      border: none;
+      background: orange;
+      color: white;
+      cursor: pointer;
+    }
+    .ranking { margin-top: 30px; font-size: 22px; }
+  </style>
+</head>
+<body>
+
+<h1>Crown 👑 Podium</h1>
+<h2 id="roomCode"></h2>
+<button onclick="nextQuestion()">Lancer question</button>
+<select id="quizSelect"></select>
+<button onclick="loadQuiz()">Choisir quiz</button>
+<button onclick="resetGame()">Nouvelle partie</button>
+<div id="ranking" class="ranking"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+// Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyBwvGD0hhvka7BW88wg6NRTkKpVDIg18bw",
+    authDomain: "crown-podium-64fb5.firebaseapp.com",
+    databaseURL: "https://crown-podium-64fb5-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "crown-podium-64fb5",
+    storageBucket: "crown-podium-64fb5.firebasestorage.app",
+    messagingSenderId: "893724598521",
+    appId: "1:893724598521:web:9695de26ceef1738564228",
+    measurementId: "G-MG0ZBYDQXL"
+  };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Générer le code
+document.getElementById("roomCode").innerText = "Code : " + roomId;
+
+// Questions
+let questions = [];
+let currentQ = 0;
+let selectedQuiz = null;
+
+
+// Générer code (fonction)
+function generateRoomId() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "";
+  for (let i = 0; i < 5; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return code;
+}
+
+let roomID = generateRoomId();
+let currentQ = 0;
+
+// Lancer question (fonction)
+function nextQuestion() {
+  if (!questions || questions.length === 0) {
+    alert("Choisir un quiz");
+    return;
+  }
+
+  if (currentQ >= questions.length) {
+    alert("Fin du quiz");
+    return;
+  }
+
+  const q = questions[currentQ];
+  
+  const displayText = "Question " + (currentQ + 1) + " / " + questions.length + "<br><br>" + q.text;  
+
+    
+  db.ref("rooms/" + roomId + "/question").set({
+    text: displayText,
+    answers: q.answers,
+    correct: q.correct,
+    startTime: Date.now()
+  });
+
+  currentQ++;
+}
+
+// Rénitialiser (fonction)
+function resetGame() {
+  db.ref("rooms/" + roomId).remove();
+  currentQ = 0;
+  roomId = generateRoomId(); // nouveau code
+  document.getElementById("roomCode").innerText = "Code : " + roomId;
+}
+
+// Charger les questions (fonction)  
+function loadQuiz(){
+  const id = document.getElementById("quizSelect").value;
+
+  db.ref("quizzes/" + id).once("value", snap => {
+    const quiz = snap.val();
+    questions = quiz.questions;
+    selectedQuiz = id;
+
+    currentQ = 0;
+    alert("Quiz chargé");
+  });
+}
+    
+// Classement
+db.ref("rooms/" + roomId + "/players").on("value", snap => {
+  const data = snap.val();
+  if(!data) return;
+
+  let players = Object.values(data)
+    .filter(p => p.score > 0)
+    .sort((a,b) => b.score - a.score || a.time - b.time);
+
+  let unranked = Object.values(data).filter(p => p.score === 0);
+
+  let html = "<h2>🏆 Classement</h2>";
+  players.forEach((p,i) => {
+    html += `<p>${i+1}. ${p.name} - ${p.score} pts (${p.time}s)</p>`;
+  });
+
+  if(unranked.length){
+    html += "<h3>Non classés</h3>";
+    unranked.forEach(p => { html += `<p>${p.name}</p>`; });
+  }
+
+  // Podium final
+  if(currentQ >= questions.length && players.length){
+    html += "<h2>Podium Final 🏁</h2>";
+    players.slice(0,3).forEach((p,i) => {
+      const emojis = ["👑","🥈","🥉"];
+      html += `<p>${emojis[i]} ${p.name} - ${p.score} pts</p>`;
+    });
+  }
+
+  document.getElementById("ranking").innerHTML = html;
+});
+</script>
+</body>
+</html>

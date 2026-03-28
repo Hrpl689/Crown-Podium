@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Crown Podium - Player</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #ff9800, #ffc107);
+      text-align: center;
+      color: white;
+    }
+    input {
+      padding: 15px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 20px;
+    }
+    button {
+      display: block;
+      margin: 15px auto;
+      padding: 15px;
+      width: 80%;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      background: #2196f3;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Crown 👑 Podium</h1>
+<input id="name" placeholder="Pseudo">
+<input id="room" placeholder="Code de la partie">
+<button onclick="join()">START</button>
+<div id="game"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyBwvGD0hhvka7BW88wg6NRTkKpVDIg18bw",
+    authDomain: "crown-podium-64fb5.firebaseapp.com",
+    databaseURL: "https://crown-podium-64fb5-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "crown-podium-64fb5",
+    storageBucket: "crown-podium-64fb5.firebasestorage.app",
+    messagingSenderId: "893724598521",
+    appId: "1:893724598521:web:9695de26ceef1738564228",
+    measurementId: "G-MG0ZBYDQXL"
+  };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+let playerId;
+let startTime;
+let roomId;
+
+function join(){
+  const name = document.getElementById("name").value;
+  roomId = document.getElementById("room").value;
+
+  playerId = Date.now();
+
+  db.ref("rooms/" + roomId + "/players/" + playerId).set({
+    name: name,
+    score: 0,
+    time: 0
+  });
+
+  listenQuestion();
+}
+
+function listenQuestion(){
+  db.ref("rooms/" + roomId + "/question").on("value", snap=>{
+    const q = snap.val();
+    if (!q) {
+      showHome();
+      return;
+    }
+    
+    startTime = q.startTime;
+    let html = `<h3 style="opacity:0.8">${q.text.split("<br><br>")[0]}</h3>
+  <h2>${q.text.split("<br><br>")[1]}</h2>`;
+    if (q.image){
+  html += `<img src="${q.image}" style="max-width:80%; border-radius:10px; margin:10px;">`;
+}
+    q.answers.forEach((a,i)=>{
+      html += `<button onclick="answer(${i})">${a}</button>`;
+    });
+    document.body.innerHTML = html;
+  });
+}
+
+function answer(i){
+  db.ref("question").once("value", snap=>{
+    const q = snap.val();
+    let time = Math.floor((Date.now()-startTime)/1000);
+
+    db.ref("players/"+playerId).once("value", pSnap=>{
+      let p = pSnap.val();
+      if(i === q.correct){
+        p.score +=1;
+        p.time += time;
+      }
+      db.ref("rooms/" + roomId + "/players/" + playerId).set(p);
+      document.body.innerHTML = "<h2>✅ Réponse envoyée !</h2>";
+    });
+  });
+}
+function showHome(){
+  document.body.innerHTML = `
+    <h1>🎮 Rejoins la partie</h1>
+    <input id="name" placeholder="Pseudo">
+    <input id="room" placeholder="Code de la partie">
+    <button onclick="join()">START</button>
+  `;
+}
+
+</script>
+</body>
+</html>
