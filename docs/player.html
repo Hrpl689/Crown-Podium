@@ -37,7 +37,7 @@
 <input id="room" placeholder="Code de la partie">
 <button onclick="join()">START</button>
 <div id="game"></div>
-
+<div id="result" style="font-size: 2em; margin-top: 20px;"></div>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
@@ -95,20 +95,27 @@ function listenQuestion(){
   });
 }
 
-function answer(i){
-  db.ref("question").once("value", snap=>{
-    const q = snap.val();
-    let time = Math.floor((Date.now()-startTime)/1000);
+function sendAnswer(index){
+  const correct = currentQuestion.correct;
 
-    db.ref("players/"+playerId).once("value", pSnap=>{
-      let p = pSnap.val();
-      if(i === q.correct){
-        p.score +=1;
-        p.time += time;
-      }
-      db.ref("rooms/" + roomId + "/players/" + playerId).set(p);
-      document.body.innerHTML = "<h2>✅ Réponse envoyée !</h2>";
-    });
+  let message = "";
+  let color = "";
+
+  if(index === correct){
+    message = "Bonne réponse !";
+    color = "green";
+  } else {
+    message = "Mauvaise réponse";
+    color = "red";
+  }
+
+  document.getElementById("result").innerHTML = message;
+  document.getElementById("result").style.color = color;
+
+  db.ref("rooms/" + roomId + "/players/" + playerId).set({
+    answer: index,
+    correct: index === correct,
+    time: Date.now() - currentQuestion.startTime
   });
 }
 function showHome(){
