@@ -133,26 +133,36 @@ db.ref("rooms/" + roomId + "/players").on("value", snap => {
 
   let unranked = Object.values(data).filter(p => p.score === 0);
 
-  let html = "<h2>🏆 Classement</h2>";
-  players.forEach((p,i) => {
-    html += `<p>${i+1}. ${p.name} - ${p.score} pts (${p.time}s)</p>`;
-  });
+  let html = "<h2>Classement :</h2>";
 
-  if(unranked.length){
-    html += "<h3>Non classés</h3>";
-    unranked.forEach(p => { html += `<p>${p.name}</p>`; });
+players.sort((a, b) => {
+  if(b.score === a.score){
+    return a.time - b.time;
   }
+  return b.score - a.score;
+});
 
-  // Podium final
-  if(currentQ >= questions.length && players.length){
-    html += "<h2>Podium Final 🏁</h2>";
-    players.slice(0,3).forEach((p,i) => {
-      const emojis = ["👑","🥈","🥉"];
-      html += `<p>${emojis[i]} ${p.name} - ${p.score} pts</p>`;
-    });
-  }
+players.forEach((p, i) => {
+  let medal = "";
 
-  document.getElementById("ranking").innerHTML = html;
+  if(i === 0) medal = "👑";
+  else if(i === 1) medal = "🥈";
+  else if(i === 2) medal = "🥉";
+
+  html += `
+    <div style="
+      background: rgba(0,0,0,0.6);
+      margin: 10px;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 1.3em;
+    ">
+      ${medal} ${i+1}. ${p.name} - ${p.score} pts
+    </div>
+  `;
+});
+
+document.getElementById("leaderboard").innerHTML = html;
 });
 </script>
 </body>
