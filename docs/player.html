@@ -58,6 +58,7 @@ const db = firebase.database();
 let playerId;
 let startTime;
 let roomId;
+let currentQuestion;
 
 function join(){
   const name = document.getElementById("name").value;
@@ -77,6 +78,7 @@ function join(){
 function listenQuestion(){
   db.ref("rooms/" + roomId + "/question").on("value", snap=>{
     const q = snap.val();
+    currentQuestion = q;
     if (!q) {
       showHome();
       return;
@@ -91,11 +93,11 @@ function listenQuestion(){
     q.answers.forEach((a,i)=>{
       html += `<button onclick="answer(${i})">${a}</button>`;
     });
-    document.body.innerHTML = html;
+    document.getElementById("game").innerHTML = html;;
   });
 }
 
-function sendAnswer(index){
+function answer(index){
   const correct = currentQuestion.correct;
 
   let message = "";
@@ -112,7 +114,7 @@ function sendAnswer(index){
   document.getElementById("result").innerHTML = message;
   document.getElementById("result").style.color = color;
 
-  db.ref("rooms/" + roomId + "/players/" + playerId).set({
+  db.ref("rooms/" + roomId + "/players/" + playerId).update({
     answer: index,
     correct: index === correct,
     time: Date.now() - currentQuestion.startTime
