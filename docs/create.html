@@ -98,10 +98,6 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 function createQuiz(){
-  if(!title){
-  alert("Ajoute un nom de quiz");
-  return;
-}
   const title = document.getElementById("quizTitle").value;
 
   const q = {
