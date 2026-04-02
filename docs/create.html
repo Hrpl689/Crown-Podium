@@ -55,6 +55,10 @@
 
 <h1>👑 Créer un quiz</h1>
 
+<select id="quizSelect">
+  <option value="">Créer nouveau quiz</option>
+</select>
+  
 <input id="quizTitle" placeholder="Nom du quiz"><br><br>
 
 <input id="question" placeholder="Question"><br>
@@ -97,10 +101,24 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-function createQuiz(){
-  const title = document.getElementById("quizTitle").value;
+db.ref("quizzes").once("value", snap => {
+  const data = snap.val();
+  const select = document.getElementById("quizSelect");
 
-  const q = {
+  for(let id in data){
+    const option = document.createElement("option");
+    option.value = id;
+    option.text = data[id].title;
+    select.appendChild(option);
+  }
+});
+  
+function createQuiz(){
+
+  const title = document.getElementById("quizTitle").value;
+  const selectedQuizId = document.getElementById("quizSelect").value;
+
+  const question = {
     text: document.getElementById("question").value,
     answers: [
       document.getElementById("a1").value,
@@ -112,14 +130,19 @@ function createQuiz(){
     image: document.getElementById("imageInput").value || null
   };
 
-  const quizRef = db.ref("quizzes").push();
+  // Si quiz existant sélectionné
+  if(selectedQuizId){
+    db.ref("quizzes/" + selectedQuizId + "/questions").push(question);
+    alert("Question ajoutée au quiz existant");
+  } else {
+    const quizRef = db.ref("quizzes").push();
+    quizRef.set({
+      title: title,
+      questions: [question]
+    });
 
-  quizRef.set({
-    title: title,
-    questions: [q]
-  });
-
-  alert("Quiz créé !");
+    alert("Nouveau quiz créé");
+  }
 }
 
 function previewImage(){
