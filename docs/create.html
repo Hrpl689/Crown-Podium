@@ -109,7 +109,7 @@ function createQuiz(){
       document.getElementById("a4").value
     ],
     correct: parseInt(document.getElementById("correct").value),
-    image: imageUrl || null
+    image: document.getElementById("imageInput").value || null
   };
 
   const quizRef = db.ref("quizzes").push();
