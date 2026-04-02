@@ -52,13 +52,24 @@ const firebaseConfig = {
   };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+db.ref("quizzes").once("value", snap => {
+  const data = snap.val();
+  const select = document.getElementById("quizSelect");
+
+  for(let id in data){
+    const option = document.createElement("option");
+    option.value = id;
+    option.text = data[id].title;
+    select.appendChild(option);
+  }
+});
 
 // Générer le code
+let roomId = generateRoomId();
 document.getElementById("roomCode").innerText = "Code : " + roomId;
 
 // Questions
 let questions = [];
-let currentQ = 0;
 let selectedQuiz = null;
 
 
@@ -72,7 +83,6 @@ function generateRoomId() {
   return code;
 }
 
-let roomID = generateRoomId();
 let currentQ = 0;
 
 // Lancer question (fonction)
@@ -164,7 +174,7 @@ players.forEach((p, i) => {
   `;
 });
 
-document.getElementById("leaderboard").innerHTML = html;
+document.getElementById("ranking").innerHTML = html;
 });
 </script>
 </body>
