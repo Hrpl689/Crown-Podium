@@ -103,6 +103,7 @@ function nextQuestion() {
 
     
   db.ref("rooms/" + roomId + "/question").set({
+    image: q.image || null
     text: displayText,
     answers: q.answers,
     correct: q.correct,
