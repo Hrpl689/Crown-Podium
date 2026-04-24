@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Crown Podium - Host</title>
+  <title>Crown Podium - Master</title>
   <style>
     body {
       font-family: Arial;
@@ -56,7 +56,9 @@ db.ref("quizzes").once("value", snap => {
   const data = snap.val();
   const select = document.getElementById("quizSelect");
 
-  for(let id in data){
+  select.innerHTML = "";
+
+  for (let id in data) {
     const option = document.createElement("option");
     option.value = id;
     option.text = data[id].title;
