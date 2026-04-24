@@ -56,9 +56,17 @@ db.ref("quizzes").once("value", snap => {
   const data = snap.val();
   const select = document.getElementById("quizSelect");
 
+  // sécurité si aucun quiz
+  if(!data){
+    alert("Aucun quiz trouvé");
+    return;
+  }
+
+  // vider le menu
   select.innerHTML = "";
 
-  for (let id in data) {
+  // remplir le menu
+  for(let id in data){
     const option = document.createElement("option");
     option.value = id;
     option.text = data[id].title;
