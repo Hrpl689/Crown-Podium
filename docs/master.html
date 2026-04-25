@@ -56,7 +56,7 @@ db.ref("quizzes").once("value", snap => {
   const data = snap.val();
   const select = document.getElementById("quizSelect");
 
-  // sécurité si aucun quiz
+  // si aucun quiz
   if(!data){
     alert("Aucun quiz trouvé");
     return;
@@ -74,18 +74,20 @@ db.ref("quizzes").once("value", snap => {
   }
 });
 
-// Générer le code
+// code
 let roomId = generateRoomId();
 document.getElementById("roomCode").innerText = "Code : " + roomId;
 db.ref("rooms/" + roomId).set({
   createdAt: Date.now()
 });
+listenPlayers()
+
 // Questions
 let questions = [];
 let selectedQuiz = null;
 
 
-// Générer code (fonction)
+// code (fonction)
 function generateRoomId() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let code = "";
@@ -128,13 +130,17 @@ function nextQuestion() {
 
 // Rénitialiser (fonction)
 function resetGame() {
-  db.ref("rooms/" + roomId).remove();
+  db.ref("rooms/" + roomId").remove();
   currentQ = 0;
   roomId = generateRoomId(); // nouveau code
   document.getElementById("roomCode").innerText = "Code : " + roomId;
+  db.ref("rooms/" + roomId).set({
+  createdAt: Date.now()
+  });
+  listenPlayers();
 }
 
-// Charger les questions (fonction)  
+// Charger questions (fonction)  
 function loadQuiz(){
   const id = document.getElementById("quizSelect").value;
 
@@ -149,44 +155,54 @@ function loadQuiz(){
 }
     
 // Classement
-db.ref("rooms/" + roomId + "/players").on("value", snap => {
-  const data = snap.val();
-  if(!data) return;
 
-  let players = Object.values(data)
-    .sort((a,b) => b.score - a.score || a.time - b.time);
+function listenPlayers(){
+  db.ref("rooms/" + roomId + "/players").on("value", snap => {
+    const data = snap.val();
 
-  let html = "<h2>Classement :</h2>";
+    if(!data){
+      document.getElementById("ranking").innerHTML = "<h2>Aucun joueur</h2>";
+      return;
+    }
 
-players.sort((a, b) => {
-  if(b.score === a.score){
-    return a.time - b.time;
-  }
-  return b.score - a.score;
-});
+    let players = Object.values(data).sort((a,b) => {
+      const scoreA = a.score || 0;
+      const scoreB = b.score || 0;
+      const timeA = a.time || Infinity;
+      const timeB = b.time || Infinity;
 
-players.forEach((p, i) => {
-  let medal = "";
+      if(scoreB === scoreA){
+        return timeA - timeB;
+      }
+      return scoreB - scoreA;
+    });
 
-  if(i === 0) medal = "👑";
-  else if(i === 1) medal = "🥈";
-  else if(i === 2) medal = "🥉";
+    let html = "<h2>Classement :</h2>";
 
-  html += `
-    <div style="
-      background: rgba(0,0,0,0.6);
-      margin: 10px;
-      padding: 15px;
-      border-radius: 10px;
-      font-size: 1.3em;
-    ">
-      ${medal} ${i+1}. ${p.name} - ${p.score} pts
-    </div>
-  `;
-});
+    players.forEach((p, i) => {
+      let medal = "";
 
-document.getElementById("ranking").innerHTML = html;
-});
+      if(i === 0) medal = "👑";
+      else if(i === 1) medal = "🥈";
+      else if(i === 2) medal = "🥉";
+
+      html += `
+        <div style="
+          background: rgba(0,0,0,0.6);
+          margin: 10px;
+          padding: 15px;
+          border-radius: 10px;
+          font-size: 1.3em;
+        ">
+          ${medal} ${i+1}. ${p.name} - ${p.score} pts
+        </div>
+      `;
+    });
+
+    document.getElementById("ranking").innerHTML = html;
+  });
+}
+
 </script>
 </body>
 </html>
