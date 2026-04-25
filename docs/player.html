@@ -108,8 +108,11 @@ function listenQuestion(){
 }
 
 function answer(index){
-  const correct = currentQuestion.correct;
+  if(document.getElementById("result").innerHTML !== ""){
+    return;
+  }
 
+  const correct = currentQuestion.correct
   let message = "";
   let color = "";
 
