@@ -62,7 +62,7 @@ let currentQuestion;
 
 function join(){
   const name = document.getElementById("name").value;
-  roomId = document.getElementById("room").value;
+  roomId = document.getElementById("room").value.trim().toUpperCase();
 
   playerId = Date.now();
 
