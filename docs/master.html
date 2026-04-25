@@ -77,7 +77,9 @@ db.ref("quizzes").once("value", snap => {
 // Générer le code
 let roomId = generateRoomId();
 document.getElementById("roomCode").innerText = "Code : " + roomId;
-
+db.ref("rooms/" + roomId).set({
+  createdAt: Date.now()
+});
 // Questions
 let questions = [];
 let selectedQuiz = null;
