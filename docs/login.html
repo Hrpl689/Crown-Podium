@@ -10,6 +10,13 @@
       text-align: center;
     }
     h1 { font-size: 50px; margin-top: 20px; }
+    input {
+      padding: 15px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 20px;
+    }
     button {
       padding: 15px 30px;
       font-size: 20px;
@@ -31,4 +38,37 @@
 <input id="password" type="password" placeholder="Mot de passe"><br>
 <button onclick="login()">Se connecter</button>
 <button onclick="signup()">Créer un compte</button>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script>
+
+function signup(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  firebase.auth().createUserWithEmailAndPassword(email, password)
+    .then(user => {
+      alert("Compte créé !");
+    })
+    .catch(error => {
+      alert(error.message);
+    });
+}
+
+function login(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(user => {
+      alert("Connecté !");
+      window.location.href = "host.html"; // ou create.html
+    })
+    .catch(error => {
+      alert(error.message);
+    });
+}
+
+</script>
+
 </body>
