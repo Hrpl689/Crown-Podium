@@ -154,10 +154,7 @@ db.ref("rooms/" + roomId + "/players").on("value", snap => {
   if(!data) return;
 
   let players = Object.values(data)
-    .filter(p => p.score > 0)
     .sort((a,b) => b.score - a.score || a.time - b.time);
-
-  let unranked = Object.values(data).filter(p => p.score === 0);
 
   let html = "<h2>Classement :</h2>";
 
