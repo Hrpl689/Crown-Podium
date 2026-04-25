@@ -77,7 +77,7 @@ function join(){
   db.ref("rooms/" + roomId + "/finished").on("value", snap => {
   if(snap.val()){
     document.getElementById("game").innerHTML =
-      "<h2>Partie terminée</h2><button onclick="showHome()">Retour</button>";
+      `<h2>Partie terminée</h2><button onclick="showHome()">Retour</button>`;
   }
 });
 
