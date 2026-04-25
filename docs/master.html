@@ -74,13 +74,7 @@ db.ref("quizzes").once("value", snap => {
   }
 });
 
-// code
-let roomId = generateRoomId();
-document.getElementById("roomCode").innerText = "Code : " + roomId;
-db.ref("rooms/" + roomId).set({
-  createdAt: Date.now()
-});
-listenPlayers()
+
 
 // Questions
 let questions = [];
@@ -147,7 +141,7 @@ function loadQuiz(){
 
   db.ref("quizzes/" + id).once("value", snap => {
     const quiz = snap.val();
-    questions = quiz.questions;
+    questions = Object.values(quiz.questions);
     selectedQuiz = id;
 
     currentQ = 0;
@@ -204,6 +198,13 @@ function listenPlayers(){
   });
 }
 
+// salon
+let roomId = generateRoomId();
+document.getElementById("roomCode").innerText = "Code : " + roomId;
+db.ref("rooms/" + roomId).set({
+  createdAt: Date.now()
+});
+listenPlayers()  
 </script>
 </body>
 </html>
