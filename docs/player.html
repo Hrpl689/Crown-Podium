@@ -73,6 +73,14 @@ function join(){
   });
 
   listenQuestion();
+
+  db.ref("rooms/" + roomId + "/finished").on("value", snap => {
+  if(snap.val()){
+    document.getElementById("game").innerHTML =
+      "<h2>Partie terminée</h2><button onclick="showHome()">Retour</button>";
+  }
+});
+
 }
 
 function listenQuestion(){
@@ -80,9 +88,11 @@ function listenQuestion(){
     const q = snap.val();
     currentQuestion = q;
     if (!q) {
-      showHome();
-      return;
-    }
+      document.getElementById("game").innerHTML = `
+      <h2>⏳ En attente de la première question...</h2>
+  `;
+  return;
+}
     
     startTime = q.startTime;
     let html = `<h3 style="opacity:0.8">${q.text.split("<br><br>")[0]}</h3>
