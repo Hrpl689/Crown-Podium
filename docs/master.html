@@ -130,7 +130,8 @@ function nextQuestion() {
 
 // Rénitialiser (fonction)
 function resetGame() {
-  db.ref("rooms/" + roomId").remove();
+  db.ref("rooms/" + roomId + "/players").off();
+  db.ref("rooms/" + roomId).remove();
   currentQ = 0;
   roomId = generateRoomId(); // nouveau code
   document.getElementById("roomCode").innerText = "Code : " + roomId;
