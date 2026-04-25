@@ -129,10 +129,20 @@ function answer(index){
   document.getElementById("result").innerHTML = message;
   document.getElementById("result").style.color = color;
 
+  db.ref("rooms/" + roomId + "/players/" + playerId).once("value", snap => {
+  const player = snap.val();
+
+  let newScore = player.score || 0;
+
+  if(index === correct){
+    newScore += 100;
+  }
+
   db.ref("rooms/" + roomId + "/players/" + playerId).update({
     answer: index,
     correct: index === correct,
-    time: Date.now() - currentQuestion.startTime
+    time: Date.now() - currentQuestion.startTime,
+    score: newScore
   });
 }
 function showHome(){
