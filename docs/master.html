@@ -105,6 +105,7 @@ function nextQuestion() {
   }
 
   if (currentQ >= questions.length) {
+    db.ref("rooms/" + roomId + "/finished").set(true);
     alert("Fin du quiz");
     return;
   }
