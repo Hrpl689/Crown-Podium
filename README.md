@@ -38,15 +38,18 @@ Elle permet à des élèves de répondre à des questions en direct et d’affic
 2. Ouvrir `master.html` pour choisir le quiz et lancer la partie
 3. Les joueurs ouvrent `player.html`, entrent leur pseudo et le code
 4. Lancer les questions depuis le master
-
+5. `login.html` sert à se connecter ou à créer un compte
+6. Touts ces fichers sont disponibles sur `home.html`
+   
 ---
 
-## Remarque
+## Remarques
 
 Le projet utilise Firebase en mode test (accès public).
+Les salons ne sont pas supprimés automatiquement.
 
 ---
 
 ## Crédits
 
-Projet réalisé dans le cadre d’une présentation scolaire, par Hrpl689, Morgan et Sloan.
+Projet réalisé dans le cadre d’une présentation scolaire, par Hrpl689, Morgan et Slo.
