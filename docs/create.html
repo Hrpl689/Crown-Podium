@@ -85,6 +85,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -100,6 +101,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const auth = firebase.auth();
 
 db.ref("quizzes").once("value", snap => {
   const data = snap.val();
@@ -116,6 +118,7 @@ db.ref("quizzes").once("value", snap => {
   
 function createQuiz(){
 
+  const user = auth.currentUser;
   const title = document.getElementById("quizTitle").value;
   const selectedQuizId = document.getElementById("quizSelect").value;
   
@@ -144,6 +147,11 @@ function createQuiz(){
     });
 
     alert("Nouveau quiz créé");
+
+    quizRef.set({
+      title: title,
+      owner: user.uid
+    });
   }
 }
 
