@@ -78,10 +78,38 @@ function join(){
 
   db.ref("rooms/" + roomId + "/finished").on("value", snap => {
   if(snap.val()){
-    document.getElementById("game").innerHTML =
-      `<h2>Partie terminée</h2><button onclick="showHome()">Retour</button>`;
+
+    db.ref("rooms/" + roomId + "/players").once("value", snap => {
+      const data = snap.val();
+
+      let players = Object.entries(data).sort((a,b) => {
+        const scoreA = a[1].score || 0;
+        const scoreB = b[1].score || 0;
+        const timeA = a[1].time || Infinity;
+        const timeB = b[1].time || Infinity;
+
+        if(scoreB === scoreA){
+          return timeA - timeB;
+        }
+        return scoreB - scoreA;
+      });
+
+      const place = players.findIndex(p => p[0] == playerId) + 1;
+
+      let medal = "";
+
+      if(place === 1) medal = "👑";
+      else if(place === 2) medal = "🥈";
+      else if(place === 3) medal = "🥉";
+
+      document.getElementById("game").innerHTML = `
+        <h2>🏁 Partie terminée</h2>
+        <h1>${medal} ${place}e place</h1>
+        <button onclick="showHome()">Retour</button>
+      `;
+    });
   }
-});
+  });
 }
 
 function listenQuestion(){
