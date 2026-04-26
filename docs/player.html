@@ -87,7 +87,7 @@ function join(){
         const scoreB = b[1].score || 0;
         const timeA = a[1].time || Infinity;
         const timeB = b[1].time || Infinity;
-
+        
         if(scoreB === scoreA){
           return timeA - timeB;
         }
@@ -95,7 +95,7 @@ function join(){
       });
 
       const place = players.findIndex(p => p[0] == playerId) + 1;
-
+      const rankText = place === 1 ? "Crown Podium" : place + "e place";
       let medal = "";
 
       if(place === 1) medal = "👑";
@@ -104,7 +104,7 @@ function join(){
 
       document.getElementById("game").innerHTML = `
         <h2>🏁 Partie terminée</h2>
-        <h1>${medal} ${place}e place</h1>
+        <h1>${medal} ${rankText}</h1>
         <button onclick="showHome()">Retour</button>
       `;
     });
