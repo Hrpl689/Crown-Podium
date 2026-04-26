@@ -32,7 +32,7 @@
 </head>
 <body>
 
-<h1 id="titel">👑 Rejoins la partie</h1>
+<h1 id="title">👑 Rejoins la partie</h1>
 <input id="name" placeholder="Pseudo">
 <input id="room" placeholder="Code de la partie">
 <button onclick="join()">START</button>
@@ -59,15 +59,16 @@ let playerId;
 let startTime;
 let roomId;
 let currentQuestion;
+let playerName;
 
 function join(){
-  const name = document.getElementById("name").value;
+  playerName = document.getElementById("name").value;
   roomId = document.getElementById("room").value.trim().toUpperCase();
 
   playerId = Date.now();
 
   db.ref("rooms/" + roomId + "/players/" + playerId).set({
-    name: name,
+    name: playerName,
     score: 0,
     time: 0
   });
@@ -118,7 +119,7 @@ function listenQuestion(){
     document.getElementById("result").innerHTML = "";
     currentQuestion = q;
     if (!q) {
-      document.getElementById("title").textContent = `Partie: ${name}`;
+      document.getElementById("title").textContent = `Partie: ${playerName}`;
       document.getElementById("game").innerHTML = `
       <h2>⏳ En attente de la première question...</h2>
   `;
