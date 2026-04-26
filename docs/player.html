@@ -163,7 +163,7 @@ function answer(index){
   let newScore = player.score || 0;
 
   if(index === correct){
-    newScore += 100;
+    newScore += currentQuestion.points || 100;
   }
 
   db.ref("rooms/" + roomId + "/players/" + playerId).update({
