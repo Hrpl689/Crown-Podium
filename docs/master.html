@@ -116,6 +116,7 @@ function nextQuestion() {
     text: displayText,
     answers: q.answers,
     correct: q.correct,
+    points: q.points || 100,
     startTime: Date.now()
   });
 
