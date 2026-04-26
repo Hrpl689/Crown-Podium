@@ -37,7 +37,6 @@
 <input id="room" placeholder="Code de la partie">
 <button onclick="join()">START</button>
 <div id="game"></div>
-<div id="result" style="font-size: 2em; margin-top: 20px;"></div>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
@@ -60,7 +59,8 @@ let startTime;
 let roomId;
 let currentQuestion;
 let playerName;
-
+let answered = false;
+  
 function join(){
   playerName = document.getElementById("name").value;
   roomId = document.getElementById("room").value.trim().toUpperCase();
@@ -114,6 +114,7 @@ function join(){
 }
 
 function listenQuestion(){
+  answered = false;
   db.ref("rooms/" + roomId + "/question").on("value", snap=>{
     const q = snap.val();
     document.getElementById("result").innerHTML = "";
@@ -140,10 +141,9 @@ function listenQuestion(){
 }
 
 function answer(index){
-  if(document.getElementById("result").innerHTML !== ""){
-    return;
-  }
-
+  if(answered) return;
+  answered = true;
+  
   const correct = currentQuestion.correct
   let message = "";
   let color = "";
@@ -156,8 +156,9 @@ function answer(index){
     color = "red";
   }
 
-  document.getElementById("result").innerHTML = message;
-  document.getElementById("result").style.color = color;
+  document.getElementById("game").innerHTML = `
+  <h1 style="color:${color};">${message}</h1>
+`;
 
   db.ref("rooms/" + roomId + "/players/" + playerId).once("value", snap => {
   const player = snap.val();
