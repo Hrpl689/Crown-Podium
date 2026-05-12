@@ -114,10 +114,9 @@ function join(){
 }
 
 function listenQuestion(){
-  answered = false;
   db.ref("rooms/" + roomId + "/question").on("value", snap=>{
     const q = snap.val();
-    document.getElementById("result").innerHTML = "";
+    answered = false;
     currentQuestion = q;
     if (!q) {
       document.getElementById("title").textContent = `Partie: ${playerName}`;
@@ -128,8 +127,11 @@ function listenQuestion(){
 }
     
     startTime = q.startTime;
-    let html = `<h3 style="opacity:0.8">${q.text.split("<br><br>")[0]}</h3>
-  <h2>${q.text.split("<br><br>")[1]}</h2>`;
+    const parts = q.text.split("<br><br>");
+let html = `
+  <h3 style="opacity:0.8">${parts[0] || ""}</h3>
+  <h2>${parts[1] || q.text}</h2>
+`;
     if (q.image){
   html += `<img src="${q.image}" style="max-width:80%; border-radius:10px; margin:10px;">`;
 }
