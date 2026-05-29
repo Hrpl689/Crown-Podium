@@ -131,7 +131,7 @@ function createQuiz(){
       document.getElementById("a4").value
     ],
     correct: parseInt(document.getElementById("correct").value),
-    image: document.getElementById("imageInput").value || null
+    image: document.getElementById("imageInput").value || null,
     points: parseInt(document.getElementById("points").value) || 100
   };
 
@@ -147,13 +147,6 @@ function createQuiz(){
     });
 
     alert("Nouveau quiz créé");
-
-    quizRef.set({
-      title: title,
-      owner: user.uid
-    });
-  }
-}
 
 function previewImage(){
   const url = document.getElementById("imageInput").value;
